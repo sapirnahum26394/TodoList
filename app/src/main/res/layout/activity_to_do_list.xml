@@ -9,33 +9,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
+
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <SearchView
+            android:id="@+id/searchID"
             android:layout_width="match_parent"
             android:queryHint="Todo"
             android:iconifiedByDefault="false"
             android:layout_height="wrap_content">
 
+
         </SearchView>
 
         <ListView
-            android:layout_width="match_parent"
-
-            android:layout_height="wrap_content">
-
-            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-            <!--                android:id="@+id/floating_action_button"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="bottom|right"-->
-            <!--                android:layout_margin="16dp"-->
-            <!--                app:srcCompat="@drawable/ic_add" />-->
-        </ListView>
-
+            android:id="@+id/listID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
         <com.google.android.material.floatingactionbutton.FloatingActionButton
 
             android:id="@+id/fab_btn"
@@ -49,6 +42,10 @@
             app:srcCompat="@drawable/ic_add"
             android:clickable="true"
             app:fabSize="normal" />
+        />
+
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
