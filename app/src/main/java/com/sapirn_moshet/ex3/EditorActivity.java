@@ -135,12 +135,10 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    public void createDB()
-    {
+    public void createDB() {
         try
         {
             todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
-
             String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, date VARCHAR, time VARCHAR);";
             todos.execSQL(sql);
         }
@@ -150,32 +148,21 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         // Make buttons clickable since the database was created
-        // loginBtn.setEnabled(true);
+        btnADD.setEnabled(true);
     }
 
     public void addToDo()
     {
-        Cursor cursor = todos.rawQuery("SELECT * FROM todos;", null);
-
-        // Get the index for the column name provided
-        int idColumn = cursor.getColumnIndex("_id");
+        Cursor cursor = todos.rawQuery("SELECT max(_id) FROM todos;", null);
 
         // Move to the first row of results & Verify that we have results
         if (cursor.moveToFirst()) {
-            do {
-                // Get the results and store them in a String
-                if(!cursor.isNull(idColumn))
-                    id = cursor.getInt(idColumn);
-                    Log.d("debug", "------>id: "+id);
-
-                // Keep getting results as long as they exist
-            } while (cursor.moveToNext());
+            if(!cursor.isNull(0)) {
+                id = cursor.getInt(0);
+                Log.d("debug", "------>id: " + id);
+            }
         }
-//        Cursor getNoteId = todos.rawQuery("SELECT _id FROM todos ;", null);
-//        Log.d("debug", "------>id: "+getNoteId);
-//        Log.d("debug", "------>id: "+getNoteId.getColumnIndex("_id"));
-//        getNoteId.moveToFirst();
-//        id=getNoteId.getInt(getNoteId.getColumnIndex("_id"));
+        id++;
 
         // Get the contact name and email entered
         String title = txtTitle.getText().toString();
@@ -183,14 +170,13 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         String date = txtDate.getText().toString();
         String time = txtTime.getText().toString();
 
-        // Execute SQL statement to insert new data
+//        // Execute SQL statement to insert new data
         String sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
         todos.execSQL(sql);
         Log.d("mylog"," ---> "+title + " was insert!");
-//        Toast.makeText(this, id + " was insert!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, title + " was insert!", Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, description + " was insert!", Toast.LENGTH_SHORT).show();
-//        id++;
+////        Toast.makeText(this, id + " was insert!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, title + " was insert!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, description + " was insert!", Toast.LENGTH_SHORT).show();
 
     }
 
