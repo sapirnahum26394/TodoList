@@ -9,13 +9,28 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+
 public class ToDoListActivity extends AppCompatActivity   {
+    private EditText edtInput;
+    private ListView listView;
+ //   private ArrayAdapter arrayAdapter;
+//    private ArrayList<custom> arrayList;
+    private ArrayList<AndroidFlavor> androidFlavors;;
     private String user_name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +38,7 @@ public class ToDoListActivity extends AppCompatActivity   {
         setContentView(R.layout.activity_to_do_list);
         user_name = getIntent().getExtras().getString("user_name");
         setTitle("Todo list ("+user_name+")");
+        listView = findViewById(R.id.listID);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_btn);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -33,7 +49,44 @@ public class ToDoListActivity extends AppCompatActivity   {
                 startActivity(intent);
             }
         });
+
+
+
+        //test
+        // Create an ArrayList of AndroidFlavor objects
+        androidFlavors = new ArrayList<AndroidFlavor>();
+        androidFlavors.add(new AndroidFlavor("Todo Title 0", "This is description of Todo0" ,"11/11/20","13:40"));
+        androidFlavors.add(new AndroidFlavor("Todo Title 1", "This is description of Todo1","20/11/20","11:20"));
+        androidFlavors.add(new AndroidFlavor("Todo Title 2", "This is description of Todo1","20/02/20","01:20"));
+        androidFlavors.add(new AndroidFlavor("Todo Title 3", "This is description of Todo1","20/05/20","06:20"));
+
+        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
+        // The adapter knows how to create list item views for each item in the list.
+        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
+
+        // Get a reference to the ListView, and attach the adapter to the listView.
+        listView = findViewById(R.id.listID);
+        listView.setAdapter(flavorAdapter);
+
+        // add Item Click Listener
+    //    listView.setOnItemClickListener(this);
+
     }
+
+//    @Override
+//    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+//    {
+//        AndroidFlavor androidFlavor = androidFlavors.get(position);
+//        //showSimpleAlert(androidFlavor.getVerIcon(), androidFlavor.getVerName() , androidFlavor.getVerAPILevel());
+//    }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.id.searchID, menu);
+//
+//        return true;
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.logout_menu, menu);
