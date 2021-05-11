@@ -320,8 +320,10 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
             Log.d("mylog", "allFill is: "+String.valueOf(all_fill));
             if (all_fill == true) {
-                Toast.makeText(this, "All fields was entered correctly", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "All fields was entered correctly", Toast.LENGTH_SHORT).show(); //test
                 addToDo();
+                Toast.makeText(this, "Todo was ADDED", Toast.LENGTH_SHORT).show();
+
             }
         }
     }
@@ -330,4 +332,3 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
 
 }
-
