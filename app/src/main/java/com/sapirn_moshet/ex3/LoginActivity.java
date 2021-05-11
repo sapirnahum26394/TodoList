@@ -235,6 +235,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         dialog.show();
     }
 
+    public void addUser()
+    {
+
+        // Get the contact name and email entered
+        String user_Name = userName.getText().toString();
+        String user_pass = userPass.getText().toString();
+
+        // Execute SQL statement to insert new data
+        String sql = "INSERT INTO users (username, password) VALUES ('" + user_Name + "', '" + user_pass + "');";
+        users.execSQL(sql);
+        Log.d("mylog"," ---> "+user_Name + " was insert!");
+
+        Toast.makeText(this, user_Name + " was insert!", Toast.LENGTH_SHORT).show();
+    }
 
 
 
@@ -256,20 +270,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //        edtEmail.setText("");
 //    }
 //
-    public void addUser()
-    {
-
-        // Get the contact name and email entered
-        String user_Name = userName.getText().toString();
-        String user_pass = userPass.getText().toString();
-
-        // Execute SQL statement to insert new data
-        String sql = "INSERT INTO users (username, password) VALUES ('" + user_Name + "', '" + user_pass + "');";
-        users.execSQL(sql);
-        Log.d("mylog"," ---> "+user_Name + " was insert!");
-
-        Toast.makeText(this, user_Name + " was insert!", Toast.LENGTH_SHORT).show();
-    }
 
 //
 //    public void showContacts()

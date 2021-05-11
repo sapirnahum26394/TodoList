@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ToDoListActivity"></activity>
+        <activity android:name=".EditorActivity"></activity>
 
     </application>
 

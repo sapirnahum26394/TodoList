@@ -16,21 +16,39 @@
 
         <SearchView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></SearchView>
+            android:queryHint="Todo"
+            android:iconifiedByDefault="false"
+            android:layout_height="wrap_content">
+
+        </SearchView>
 
         <ListView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
 
-<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--                android:id="@+id/floating_action_button"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="bottom|right"-->
-<!--                android:layout_margin="16dp"-->
-<!--                app:srcCompat="@drawable/ic_add" />-->
+            android:layout_height="wrap_content">
+
+            <!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+            <!--                android:id="@+id/floating_action_button"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="bottom|right"-->
+            <!--                android:layout_margin="16dp"-->
+            <!--                app:srcCompat="@drawable/ic_add" />-->
         </ListView>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+            android:id="@+id/fab_btn"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/purple_200"
+            android:contentDescription="TODO"
+            app:elevation="6dp"
+            app:srcCompat="@drawable/ic_add"
+            android:clickable="true"
+            app:fabSize="normal" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
