@@ -175,8 +175,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         String sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
         todos.execSQL(sql);
         Log.d("mylog"," ---> "+title + " was insert!");
-//        Intent intent = new Intent(EditorActivity.this, ToDoListActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(EditorActivity.this, ToDoListActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -319,10 +319,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
             Log.d("mylog", "allFill is: "+String.valueOf(all_fill));
             if (all_fill == true) {
-//                Toast.makeText(this, "All fields was entered correctly", Toast.LENGTH_SHORT).show(); //test
                 addToDo();
-                Toast.makeText(this, "Todo was ADDED", Toast.LENGTH_SHORT).show();
-
             }
         }
     }

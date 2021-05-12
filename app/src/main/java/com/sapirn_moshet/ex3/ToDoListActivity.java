@@ -3,7 +3,6 @@ package com.sapirn_moshet.ex3;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,13 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
+import android.widget.SearchView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -31,9 +26,9 @@ import java.util.ArrayList;
 public class ToDoListActivity extends AppCompatActivity  implements ListView.OnItemClickListener {
     private EditText edtInput;
     private ListView listView;
- //   private ArrayAdapter arrayAdapter;
-//    private ArrayList<custom> arrayList;
-    private ArrayList<AndroidFlavor> androidFlavors;;
+    private SearchView searchview;
+    private TodoItemAdapter todoAdapter;
+    private ArrayList<TodoItem> todoItems;;
     private String user_name;
     public static final String MY_DB_NAME = "TodosDB"; //test
     private SQLiteDatabase todos = null; //test
@@ -44,6 +39,7 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
         user_name = getIntent().getExtras().getString("user_name");
         setTitle("Todo list ("+user_name+")");
         listView = findViewById(R.id.listID);
+        searchview = findViewById(R.id.searchID);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_btn);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,27 +50,22 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
                 startActivity(intent);
             }
         });
-
-
         create_list();
-        //test
-        // Create an ArrayList of AndroidFlavor objects
-//        androidFlavors = new ArrayList<AndroidFlavor>();
-//        androidFlavors.add(new AndroidFlavor("Todo Title 0", "This is description of Todo0" ,"11/11/20","13:40"));
-//        androidFlavors.add(new AndroidFlavor("Todo Title 1", "This is description of Todo1","20/11/20","11:20"));
-//        androidFlavors.add(new AndroidFlavor("Todo Title 2", "This is description of Todo1","20/02/20","01:20"));
-//        androidFlavors.add(new AndroidFlavor("Todo Title 3", "This is description of Todo1","20/05/20","06:20"));
-//
-//        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
-//        // The adapter knows how to create list item views for each item in the list.
-//        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
-//
-//        // Get a reference to the ListView, and attach the adapter to the listView.
-//        listView = findViewById(R.id.listID);
-//        listView.setAdapter(flavorAdapter);
+        searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("mylog", String.valueOf(ToDoListActivity.this.todoAdapter.getFilter()));
+                ToDoListActivity.this.todoAdapter.getFilter().filter(query);
 
-        // add Item Click Listener
-    //    listView.setOnItemClickListener(this);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ToDoListActivity.this.todoAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
 
     }
 
@@ -151,29 +142,27 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     */
 
     private void create_list(){
-        androidFlavors = new ArrayList<AndroidFlavor>();
-
+        todoItems = new ArrayList<TodoItem>();
         todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
         if(todos!=null){
             Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
             try {
                 while (cursor.moveToNext()) {
-                    androidFlavors.add(new AndroidFlavor(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                    todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
                 }
             } finally {
                 cursor.close();
             }
         }
 
-        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
+        todoAdapter = new TodoItemAdapter(this, todoItems);
 
         listView = findViewById(R.id.listID);
-        listView.setAdapter(flavorAdapter);
-//        listView.setOnItemClickListener(this);
+        listView.setAdapter(todoAdapter);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                AndroidFlavor androidFlavor = androidFlavors.get(position);
-                int itemId=androidFlavor.getID();
+                TodoItem todoItem = todoItems.get(position);
+                int itemId= todoItem.getID();
                 todos.delete("todos","_id = "+itemId,null);
                 create_list();
                 return false;
@@ -185,8 +174,8 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        AndroidFlavor androidFlavor = androidFlavors.get(position);
-        showSimpleAlert(androidFlavor.getTitle(), androidFlavor.getDescription() );
+        TodoItem todoItem = todoItems.get(position);
+        showSimpleAlert(todoItem.getTitle(), todoItem.getDescription() );
     }
 
     public void showSimpleAlert(String verName, String verNum)
