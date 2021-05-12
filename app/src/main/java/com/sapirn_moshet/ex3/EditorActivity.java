@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -174,10 +175,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         String sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
         todos.execSQL(sql);
         Log.d("mylog"," ---> "+title + " was insert!");
-////        Toast.makeText(this, id + " was insert!", Toast.LENGTH_SHORT).show();
-//        Toast.makeText(this, title + " was insert!", Toast.LENGTH_SHORT).show();
-//        Toast.makeText(this, description + " was insert!", Toast.LENGTH_SHORT).show();
-
+//        Intent intent = new Intent(EditorActivity.this, ToDoListActivity.class);
+//        startActivity(intent);
     }
 
     @Override

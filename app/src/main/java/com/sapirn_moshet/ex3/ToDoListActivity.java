@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -32,6 +34,8 @@ public class ToDoListActivity extends AppCompatActivity   {
 //    private ArrayList<custom> arrayList;
     private ArrayList<AndroidFlavor> androidFlavors;;
     private String user_name;
+    public static final String MY_DB_NAME = "TodosDB"; //test
+    private SQLiteDatabase todos = null; //test
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,22 +55,22 @@ public class ToDoListActivity extends AppCompatActivity   {
         });
 
 
-
+        create_list();
         //test
         // Create an ArrayList of AndroidFlavor objects
-        androidFlavors = new ArrayList<AndroidFlavor>();
-        androidFlavors.add(new AndroidFlavor("Todo Title 0", "This is description of Todo0" ,"11/11/20","13:40"));
-        androidFlavors.add(new AndroidFlavor("Todo Title 1", "This is description of Todo1","20/11/20","11:20"));
-        androidFlavors.add(new AndroidFlavor("Todo Title 2", "This is description of Todo1","20/02/20","01:20"));
-        androidFlavors.add(new AndroidFlavor("Todo Title 3", "This is description of Todo1","20/05/20","06:20"));
-
-        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
-        // The adapter knows how to create list item views for each item in the list.
-        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
-
-        // Get a reference to the ListView, and attach the adapter to the listView.
-        listView = findViewById(R.id.listID);
-        listView.setAdapter(flavorAdapter);
+//        androidFlavors = new ArrayList<AndroidFlavor>();
+//        androidFlavors.add(new AndroidFlavor("Todo Title 0", "This is description of Todo0" ,"11/11/20","13:40"));
+//        androidFlavors.add(new AndroidFlavor("Todo Title 1", "This is description of Todo1","20/11/20","11:20"));
+//        androidFlavors.add(new AndroidFlavor("Todo Title 2", "This is description of Todo1","20/02/20","01:20"));
+//        androidFlavors.add(new AndroidFlavor("Todo Title 3", "This is description of Todo1","20/05/20","06:20"));
+//
+//        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
+//        // The adapter knows how to create list item views for each item in the list.
+//        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
+//
+//        // Get a reference to the ListView, and attach the adapter to the listView.
+//        listView = findViewById(R.id.listID);
+//        listView.setAdapter(flavorAdapter);
 
         // add Item Click Listener
     //    listView.setOnItemClickListener(this);
@@ -144,5 +148,35 @@ public class ToDoListActivity extends AppCompatActivity   {
         }
     }
     */
+
+    private void create_list(){
+        // Create an ArrayList of AndroidFlavor objects
+        androidFlavors = new ArrayList<AndroidFlavor>();
+
+        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
+        // The adapter knows how to create list item views for each item in the list.
+
+        todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
+        if(todos!=null){
+            Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
+            try {
+                while (cursor.moveToNext()) {
+                    androidFlavors.add(new AndroidFlavor(cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
+
+        // Get a reference to the ListView, and attach the adapter to the listView.
+        listView = findViewById(R.id.listID);
+        listView.setAdapter(flavorAdapter);
+
+    }
+
+
+
 
 }
