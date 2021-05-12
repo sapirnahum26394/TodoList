@@ -5,70 +5,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ToDoListActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        tools:layout_editor_absoluteX="-122dp">
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1">
 
             <TextView
                 android:id="@+id/txtTitleID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="198dp"
                 android:layout_weight="1"
-                android:background="#FFFF0000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                />
 
-
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtDateID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="0"
-                android:paddingRight="10dp"
-                android:background="#FF00FF00"
-                 />
+                android:textSize="18sp"
+                android:layout_alignParentRight="true"
+                />
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        </RelativeLayout>
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1">
 
             <TextView
-                android:layout_width="198dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="185dp"
-                android:layout_weight="1"
                 android:id="@+id/txtDescID"
-                android:paddingLeft="20dp"
-
-                 />
-
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="18sp"/>
             <TextView
                 android:id="@+id/txtTimeID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
+                android:textSize="18sp"
+                android:layout_alignParentRight="true"/>
 
-                android:paddingRight="20dp"
-                 />
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

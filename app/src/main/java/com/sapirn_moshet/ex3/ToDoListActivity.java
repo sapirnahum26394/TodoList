@@ -1,5 +1,6 @@
 package com.sapirn_moshet.ex3;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -27,7 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-public class ToDoListActivity extends AppCompatActivity   {
+public class ToDoListActivity extends AppCompatActivity  implements ListView.OnItemClickListener {
     private EditText edtInput;
     private ListView listView;
  //   private ArrayAdapter arrayAdapter;
@@ -150,18 +151,14 @@ public class ToDoListActivity extends AppCompatActivity   {
     */
 
     private void create_list(){
-        // Create an ArrayList of AndroidFlavor objects
         androidFlavors = new ArrayList<AndroidFlavor>();
-
-        // Create an AndroidFlavorAdapter, whose data source is a list of AndroidFlavors.
-        // The adapter knows how to create list item views for each item in the list.
 
         todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
         if(todos!=null){
             Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
             try {
                 while (cursor.moveToNext()) {
-                    androidFlavors.add(new AndroidFlavor(cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                    androidFlavors.add(new AndroidFlavor(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
                 }
             } finally {
                 cursor.close();
@@ -170,13 +167,34 @@ public class ToDoListActivity extends AppCompatActivity   {
 
         AndroidFlavorAdapter flavorAdapter = new AndroidFlavorAdapter(this, androidFlavors);
 
-        // Get a reference to the ListView, and attach the adapter to the listView.
         listView = findViewById(R.id.listID);
         listView.setAdapter(flavorAdapter);
-
+//        listView.setOnItemClickListener(this);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                AndroidFlavor androidFlavor = androidFlavors.get(position);
+                int itemId=androidFlavor.getID();
+                todos.delete("todos","_id = "+itemId,null);
+                create_list();
+                return false;
+            }
+        });
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+    {
+        AndroidFlavor androidFlavor = androidFlavors.get(position);
+        showSimpleAlert(androidFlavor.getTitle(), androidFlavor.getDescription() );
+    }
 
-
+    public void showSimpleAlert(String verName, String verNum)
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle(verName);
+        alertDialog.setMessage(verNum);
+        alertDialog.setPositiveButton("OK", null);
+        alertDialog.show();
+    }
 }

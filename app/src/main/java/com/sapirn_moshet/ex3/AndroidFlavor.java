@@ -11,6 +11,7 @@ public class AndroidFlavor {
 
     // Drawable resource ID
     private String time;
+    private int id;
 
 
     /*
@@ -20,8 +21,9 @@ public class AndroidFlavor {
      * @param number is the corresponding Android version API level
      * @param image is drawable reference ID that corresponds to the Android version
      * */
-    public AndroidFlavor(String title, String desc, String date, String time)
+    public AndroidFlavor(int id, String title, String desc, String date, String time)
     {
+        this.id = id;
         this.title = title;
         this.description = desc;
         this.date = date;
@@ -51,5 +53,5 @@ public class AndroidFlavor {
     public String getTime() {
         return time;
     }
-
+    public int getID(){ return id; }
 }
