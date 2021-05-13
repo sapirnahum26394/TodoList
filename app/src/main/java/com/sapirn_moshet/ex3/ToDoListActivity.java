@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -28,7 +30,7 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     private ListView listView;
     private SearchView searchview;
     private TodoItemAdapter todoAdapter;
-    private ArrayList<TodoItem> todoItems;;
+    private ArrayList<TodoItem> todoItems;
     private String user_name;
     public static final String MY_DB_NAME = "TodosDB"; //test
     private SQLiteDatabase todos = null; //test
@@ -62,7 +64,25 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ToDoListActivity.this.todoAdapter.getFilter().filter(newText);
+                Log.d("mylog", "new text is:"+newText);
+                Log.d("mylog", String.valueOf(ToDoListActivity.this.todoAdapter.getFilter()));
+                ArrayList todoItemResults = new ArrayList<TodoItem>();
+                for (TodoItem x: todoItems) {
+                    if (x.getDescription().contains(newText) || x.getTitle().contains(newText) || x.getTime().contains(newText) || x.getDate().contains(newText)) {
+                        todoItemResults.add(x);
+                        Log.d("mylog", "x is:" + x.getTitle());
+                    }
+                }
+
+                ((TodoItemAdapter)listView.getAdapter()).update(todoItemResults);
+
+
+               // todoItems.addAll(todoItemResults);
+
+//                todoAdapter.notifyDataSetChanged();
+                // listView = TodoItemAdapter.this.update(todoItemResults);
+
+//                ToDoListActivity.this.todoAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -163,8 +183,9 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 TodoItem todoItem = todoItems.get(position);
                 int itemId= todoItem.getID();
-                todos.delete("todos","_id = "+itemId,null);
-                create_list();
+                showDelDialog(itemId);
+//                todos.delete("todos","_id = "+itemId,null);
+//                create_list();
                 return false;
             }
         });
@@ -176,6 +197,7 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     {
         TodoItem todoItem = todoItems.get(position);
         showSimpleAlert(todoItem.getTitle(), todoItem.getDescription() );
+      //  showExitDialog();
     }
 
     public void showSimpleAlert(String verName, String verNum)
@@ -186,4 +208,38 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
         alertDialog.setPositiveButton("OK", null);
         alertDialog.show();
     }
+
+    public void showDelDialog(int itemId)
+    {
+        Log.d("mylog", ">>>> showDelDialog()");
+
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(this);
+        dialog.setIcon(R.drawable.ic_delete);
+        dialog.setTitle("Delete item");
+        dialog.setMessage("Do you want to delete this Todo item ?");
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("YES", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Log.d("mylog", ">>>> YES");
+                Toast.makeText(ToDoListActivity.this, "YES Clicked!", Toast.LENGTH_LONG).show();
+                todos.delete("todos","_id = "+itemId,null);
+                create_list();
+               // finish(); // close this activity
+            }
+        });
+        dialog.setNegativeButton("NO", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Log.d("mylog", ">>>> NO");
+                Toast.makeText(ToDoListActivity.this, "NO Clicked!", Toast.LENGTH_LONG).show();
+            }
+        });
+        dialog.show();
+    }
+
 }
