@@ -17,6 +17,8 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
      * @param context        The current context. Used to inflate the layout file.
      * @param todoItems A List of AndroidFlavor objects to display in a list
      */
+    //ArrayList<TodoItem> items;
+
     public TodoItemAdapter(Activity context, ArrayList<TodoItem> todoItems)
     {
         // Here, we initialize the ArrayAdapter's internal storage for the context and the list.
@@ -25,7 +27,12 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
         // going to use this second argument, so it can be any value. Here, we used 0.
         super(context, 0, todoItems);
     }
+    public void update(ArrayList<TodoItem> results){
 
+        ArrayList newItems = new ArrayList<>();
+        newItems.addAll(results);
+        notifyDataSetChanged();
+    }
     /**
      * Provides a view for an AdapterView (ListView, GridView, etc.)
      *
