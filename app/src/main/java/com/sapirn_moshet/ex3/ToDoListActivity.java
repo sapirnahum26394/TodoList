@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -53,6 +54,24 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
             }
         });
         create_list();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("mylog", "position"+position + "," + todoItems.get(position).getTitle());
+
+                Intent i = new Intent(ToDoListActivity.this, EditorActivity.class);
+                i.putExtra("txtheadID", "UPDATE Todo (id=");
+                i.putExtra("id", todoItems.get(position).getID()-1);
+                i.putExtra("title", todoItems.get(position).getTitle());
+                i.putExtra("description", todoItems.get(position).getDescription());
+                i.putExtra("date", todoItems.get(position).getDate());
+                i.putExtra("time", todoItems.get(position).getTime());
+                i.putExtra("btn", "UPDATE");
+
+                startActivity(i);
+//                Object listItem = listView.getItemAtPosition(position);
+            }
+        });
         searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -192,13 +211,18 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     }
 
 
+
     @Override
+
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
+        //Log.d("mylog", "position"+position);
         TodoItem todoItem = todoItems.get(position);
         showSimpleAlert(todoItem.getTitle(), todoItem.getDescription() );
-      //  showExitDialog();
+        //  showExitDialog();
     }
+
+
 
     public void showSimpleAlert(String verName, String verNum)
     {
@@ -243,3 +267,4 @@ public class ToDoListActivity extends AppCompatActivity  implements ListView.OnI
     }
 
 }
+
