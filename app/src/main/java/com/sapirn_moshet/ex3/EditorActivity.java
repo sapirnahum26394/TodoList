@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import java.text.ParseException;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnDatePicker, btnTimePicker, btnADD;
+    private TextView txtHeadLine;
     private EditText txtDate, txtTime, txtTitle, txtDescription;
     private int mYear, mMonth, mDay, mHour, mMinute;
     private String day1, monthOfYear1;
@@ -49,7 +51,30 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         txtTime = (EditText) findViewById(R.id.timeID);
         txtTitle = (EditText) findViewById(R.id.titleID);
         txtDescription = (EditText) findViewById(R.id.descID);
+        txtHeadLine = (TextView)findViewById(R.id.txtheadID);
         user_name = getIntent().getExtras().getString("user_name");
+        //txtHeadLine.setText(getIntent().getExtras().getString("txtheadID"));
+        //txtHeadLine.setText(String.valueOf(getIntent().getExtras().getInt("id")));
+
+        String text = (getIntent().getExtras().getString("txtheadID"));
+        text+=String.valueOf(getIntent().getExtras().getInt("id"));
+        text+=")";
+        Log.d("mylog", "my text is:"+text);
+        if(!text.equals("null0)"))
+        {
+            txtHeadLine.setText(text);
+            btnADD.setText("UPDATE");
+        }else {
+            txtHeadLine.setText("ADD new Todo");
+        }
+
+
+
+        txtTitle.setText(getIntent().getExtras().getString("title"));
+        txtDescription.setText(getIntent().getExtras().getString("description"));
+        txtDate.setText(getIntent().getExtras().getString("date"));
+        txtTime.setText(getIntent().getExtras().getString("time"));
+
         btnDatePicker.setOnClickListener(this);
         btnTimePicker.setOnClickListener(this);
         btnADD.setOnClickListener(this);
