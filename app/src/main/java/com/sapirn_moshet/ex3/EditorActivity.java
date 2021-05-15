@@ -38,8 +38,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     private String user_name;
 
     public static final String MY_DB_NAME = "TodosDB"; //test
-    private SQLiteDatabase todos = null; //test
-    int id = 1;
+    private SQLiteDatabase todos = null;
+    int id = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,11 +74,10 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         txtDescription.setText(getIntent().getExtras().getString("description"));
         txtDate.setText(getIntent().getExtras().getString("date"));
         txtTime.setText(getIntent().getExtras().getString("time"));
-
         btnDatePicker.setOnClickListener(this);
         btnTimePicker.setOnClickListener(this);
         btnADD.setOnClickListener(this);
-        createDB();
+        todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
     }
 
 
@@ -161,48 +160,49 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    public void createDB() {
-        try
-        {
-            todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
-            String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, date VARCHAR, time VARCHAR);";
+
+
+    public void addToDo()    {
+        String sql;
+        String btn_Action;
+        btn_Action = getIntent().getExtras().getString("btn");
+        if(btn_Action!=null && btn_Action.equals("UPDATE")){
+            int update_id = getIntent().getExtras().getInt("id");
+            String title = txtTitle.getText().toString();
+            String description = txtDescription.getText().toString();
+            String date = txtDate.getText().toString();
+            String time = txtTime.getText().toString();
+            sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , date = "+"'"+date+"' , time="+"'"+time+"' WHERE _id = "+ update_id;
             todos.execSQL(sql);
+            Toast.makeText(this, "Todo was UPDATED", Toast.LENGTH_SHORT).show();
+            finish();
         }
-        catch (Exception e)
-        {
-            Log.d("debug", "Error Creating Database");
-        }
-
-        // Make buttons clickable since the database was created
-        btnADD.setEnabled(true);
-    }
-
-    public void addToDo()
-    {
-        Cursor cursor = todos.rawQuery("SELECT max(_id) FROM todos;", null);
-
-        // Move to the first row of results & Verify that we have results
-        if (cursor.moveToFirst()) {
-            if(!cursor.isNull(0)) {
-                id = cursor.getInt(0);
-                Log.d("debug", "------>id: " + id);
+        else{
+            String count = "SELECT * FROM todos";
+            Cursor mcursor = todos.rawQuery(count, null);
+            int icount = mcursor.getCount();
+            if(icount>0) {
+                Cursor cursor = todos.rawQuery("SELECT max(_id) FROM todos;", null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    if (!cursor.isNull(0)) {
+                        id = cursor.getInt(0);
+                    }
+                }
+                id++;
             }
+            String title = txtTitle.getText().toString();
+            String description = txtDescription.getText().toString();
+            String date = txtDate.getText().toString();
+            String time = txtTime.getText().toString();
+
+            // Execute SQL statement to insert new data
+            sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
+            todos.execSQL(sql);
+            Toast.makeText(this, "ADDED was Todo", Toast.LENGTH_SHORT).show();
+            finish();
         }
-        id++;
 
-        // Get the contact name and email entered
-        String title = txtTitle.getText().toString();
-        String description = txtDescription.getText().toString();
-        String date = txtDate.getText().toString();
-        String time = txtTime.getText().toString();
-
-//        // Execute SQL statement to insert new data
-        String sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
-        todos.execSQL(sql);
-        Log.d("mylog"," ---> "+title + " was insert!");
-        Intent intent = new Intent(EditorActivity.this, ToDoListActivity.class);
-        startActivity(intent);
-    }
+       }
 
     @Override
     public void onClick(View v) {

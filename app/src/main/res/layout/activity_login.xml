@@ -21,27 +21,20 @@
             android:id="@+id/userImgID"
             android:layout_width="wrap_content"
             android:layout_height="120dp"
-            app:srcCompat="@drawable/anonymous"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
-
+            app:srcCompat="@drawable/anonymous" />
 
         <EditText
             android:id="@+id/userID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="User Name"
-            tools:layout_editor_absoluteX="69dp"
-            tools:layout_editor_absoluteY="347dp"
-            />
+            android:hint="User Name" />
 
         <EditText
             android:id="@+id/passID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="488dp" />
+            android:inputType="textPassword"/>
 
         <Button
             android:id="@+id/btnLoginID"
