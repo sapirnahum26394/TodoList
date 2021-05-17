@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -53,8 +54,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         txtDescription = (EditText) findViewById(R.id.descID);
         txtHeadLine = (TextView)findViewById(R.id.txtheadID);
         user_name = getIntent().getExtras().getString("user_name");
-        //txtHeadLine.setText(getIntent().getExtras().getString("txtheadID"));
-        //txtHeadLine.setText(String.valueOf(getIntent().getExtras().getInt("id")));
 
         String text = (getIntent().getExtras().getString("txtheadID"));
         text+=String.valueOf(getIntent().getExtras().getInt("id"));
@@ -166,18 +165,34 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         String sql;
         String btn_Action;
         btn_Action = getIntent().getExtras().getString("btn");
+        String title = txtTitle.getText().toString();
+        String description = txtDescription.getText().toString();
+        String date = txtDate.getText().toString();
+        String time = txtTime.getText().toString();
+
+        String temp = date;
+        temp = temp.concat(time);
+        //test
+
+        //Log.d("mylog"," ---> "+temp + " temp of concat is:!"); //for test
+        //Log.d("mylog", " username is:"+user_name); //for test
+        String newTemp= temp.replace("/", "");
+        newTemp =  newTemp.replace(":", "");
+       // Log.d("mylog"," ---> "+newTemp + " after replacment:!"); //for test
+
+        long date_and_time = Long.valueOf(newTemp);
+
+
         if(btn_Action!=null && btn_Action.equals("UPDATE")){
             int update_id = getIntent().getExtras().getInt("id");
-            String title = txtTitle.getText().toString();
-            String description = txtDescription.getText().toString();
-            String date = txtDate.getText().toString();
-            String time = txtTime.getText().toString();
-            sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , date = "+"'"+date+"' , time="+"'"+time+"' WHERE _id = "+ update_id;
+
+            sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , datetime = "+"'"+date_and_time+"' WHERE _id = "+ update_id;
             todos.execSQL(sql);
             Toast.makeText(this, "Todo was UPDATED", Toast.LENGTH_SHORT).show();
             finish();
         }
         else{
+            Log.d("mylog"," ---> im in add section! "); //for test
             String count = "SELECT * FROM todos";
             Cursor mcursor = todos.rawQuery(count, null);
             int icount = mcursor.getCount();
@@ -190,15 +205,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 }
                 id++;
             }
-            String title = txtTitle.getText().toString();
-            String description = txtDescription.getText().toString();
-            String date = txtDate.getText().toString();
-            String time = txtTime.getText().toString();
 
-            // Execute SQL statement to insert new data
-            sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
+
+            sql = "INSERT INTO todos (_id, username, title, description, datetime) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" +    date_and_time+ "');";
             todos.execSQL(sql);
             Toast.makeText(this, "ADDED was Todo", Toast.LENGTH_SHORT).show();
+
             finish();
         }
 
