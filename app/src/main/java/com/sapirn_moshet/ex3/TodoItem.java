@@ -1,18 +1,14 @@
 package com.sapirn_moshet.ex3;
 
+
+
 public class TodoItem {
     private String title;
 
-    // Android version API
     private String description;
 
-    // Drawable resource ID
-  //  private String date;
-
-    // Drawable resource ID
-  //  private String time;
     private long datetime;
-  //  private int datetime;
+
     private int id;
 
 
@@ -23,17 +19,7 @@ public class TodoItem {
      * @param number is the corresponding Android version API level
      * @param image is drawable reference ID that corresponds to the Android version
      * */
-   /*
-    public TodoItem(int id, String title, String desc, String date, String time)
-    {
-        this.id = id;
-        this.title = title;
-        this.description = desc;
-      //  this.date = date;
-       // this.time = time;
 
-    }
-    */
     public TodoItem(int id, String title, String desc, long datetime)
   //  public TodoItem(int id, String title, String desc, int datetime)
     {
@@ -41,8 +27,6 @@ public class TodoItem {
         this.title = title;
         this.description = desc;
         this.datetime = datetime;
-        // this.date = date;
-        // this.time = time;
     }
     /**
      * Get the name of the Android version
@@ -57,19 +41,24 @@ public class TodoItem {
     public String getDescription() {
         return description;
     }
-    public long getDateTime(){ return datetime; }
-  //  public int getDateTime(){ return datetime; }
-    /**
-     * Get the image resource ID
-     */
-    /*
-    public String getDate() {
-        return date;
-    }
-    public String getTime() {
-        return time;
+
+    public String getTime(long l) {
+        String s = String.valueOf(l);
+        if (s.length() < 12) //Adding leading Zero in from of string number
+            s= '0'+ s;
+
+        return s.substring(8, 10)+ ":" +s.substring(10, s.length());
+
     }
 
-     */
+    public long getDateTime(){ return datetime; }
+    public String getDate(long l) {
+        String s = String.valueOf(l);
+        if (s.length() < 12) //Adding leading Zero in from of string number
+            s= '0'+ s;
+
+        return s.substring(0, 2) + "/" + s .substring(2,4) + "/" + s.substring(4,8);
+
+    }
     public int getID(){ return id; }
 }
