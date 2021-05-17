@@ -1,6 +1,7 @@
 package com.sapirn_moshet.ex3;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -70,6 +71,7 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
         TextView txtDate = convertView.findViewById(R.id.txtDateID);
         // Get the version number from the current AndroidFlavor object and
         // set this text on the number TextView
+       /*
         txtDate.setText(currentTodoItem.getDate());
 
         // Find the TextView in the list_item2.xmll layout with the ID version_number
@@ -77,9 +79,26 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
         // Get the version number from the current AndroidFlavor object and
         // set this text on the number TextView
         txtTime.setText(currentTodoItem.getTime());
+        */
+
+        long test = (currentTodoItem.getDateTime());
+        //int test = (currentTodoItem.getDateTime());
+        test++;
+        Log.d("mylog", "value: " + test);
+        Log.d("mylog", "test:"+String.valueOf(test));
+        Log.d("mylog", "value of datTime:"+String.valueOf(currentTodoItem.getDateTime()));
+       // String num = String.valueOf(currentTodoItem.getDateTime());
+        //txtDate.setText(num .substring(0, 2) + "/" + num .substring(2,4) + "/" + num .substring(4,8));
+       // String upToNCharacters = num.substring(0, Math.min(num.length(), 8));
+       // txtDate.setText(upToNCharacters);
+        // Find the TextView in the list_item2.xmll layout with the ID version_number
+
+        TextView txtTime = convertView.findViewById(R.id.txtTimeID);
         // Return the whole list item layout (containing 2 TextViews and an ImageView)
+        txtTime.setText("11:50");
         // so that it can be shown in the ListView
         return convertView;
     }
 
 }
+
