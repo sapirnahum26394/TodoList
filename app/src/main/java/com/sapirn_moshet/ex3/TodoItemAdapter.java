@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 public class TodoItemAdapter extends ArrayAdapter<TodoItem>
 {
@@ -72,11 +73,13 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
         // set this text on the number TextView
         txtDate.setText(currentTodoItem.getDate());
 
+
         // Find the TextView in the list_item2.xmll layout with the ID version_number
         TextView txtTime = convertView.findViewById(R.id.txtTimeID);
         // Get the version number from the current AndroidFlavor object and
         // set this text on the number TextView
         txtTime.setText(currentTodoItem.getTime());
+
         // Return the whole list item layout (containing 2 TextViews and an ImageView)
         // so that it can be shown in the ListView
         return convertView;

@@ -68,7 +68,7 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
         try
         {
             todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
-            String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, date VARCHAR, time VARCHAR);";
+            String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, dateTime VARCHAR);";
             todos.execSQL(sql);
         }
         catch (Exception e)
@@ -85,7 +85,7 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
             Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
             try {
                 while (cursor.moveToNext()) {
-                    todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                    todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4)));
                 }
             } finally {
                 cursor.close();

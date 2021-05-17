@@ -2,11 +2,14 @@ package com.sapirn_moshet.ex3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,16 +20,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.text.ParseException;
+
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnDatePicker, btnTimePicker, btnADD;
@@ -36,16 +34,21 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     private String day1, monthOfYear1;
     private String hour1, minute1;
     private String user_name;
-
+    private SimpleDateFormat dateFormatter;
+    private String dateTime;
     public static final String MY_DB_NAME = "TodosDB"; //test
     private SQLiteDatabase todos = null;
+    private int ALARM_ID = 1;
     int id = 0;
+    private Date d;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
         btnDatePicker = (Button) findViewById(R.id.btnDatePickerID);
         btnTimePicker = (Button) findViewById(R.id.btnTimePickerID);
+
         btnADD = (Button) findViewById(R.id.btnAddID);
         txtDate = (EditText) findViewById(R.id.dateID);
         txtTime = (EditText) findViewById(R.id.timeID);
@@ -53,8 +56,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         txtDescription = (EditText) findViewById(R.id.descID);
         txtHeadLine = (TextView)findViewById(R.id.txtheadID);
         user_name = getIntent().getExtras().getString("user_name");
-        //txtHeadLine.setText(getIntent().getExtras().getString("txtheadID"));
-        //txtHeadLine.setText(String.valueOf(getIntent().getExtras().getInt("id")));
 
         String text = (getIntent().getExtras().getString("txtheadID"));
         text+=String.valueOf(getIntent().getExtras().getInt("id"));
@@ -78,6 +79,12 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         btnTimePicker.setOnClickListener(this);
         btnADD.setOnClickListener(this);
         todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
+        dateFormatter = new SimpleDateFormat("yyyyMMddHHmm");
+        try {
+            d = dateFormatter.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -172,7 +179,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             String description = txtDescription.getText().toString();
             String date = txtDate.getText().toString();
             String time = txtTime.getText().toString();
-            sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , date = "+"'"+date+"' , time="+"'"+time+"' WHERE _id = "+ update_id;
+            sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , dateTime = "+"'"+dateTime+"' WHERE _id = "+ update_id;
             todos.execSQL(sql);
             Toast.makeText(this, "Todo was UPDATED", Toast.LENGTH_SHORT).show();
             finish();
@@ -196,13 +203,38 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             String time = txtTime.getText().toString();
 
             // Execute SQL statement to insert new data
-            sql = "INSERT INTO todos (_id, username, title, description, date, time) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + date + "', '" + time + "');";
+            sql = "INSERT INTO todos (_id, username, title, description, dateTime) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" + dateTime + "');";
             todos.execSQL(sql);
+//            createAlarm();
             Toast.makeText(this, "ADDED was Todo", Toast.LENGTH_SHORT).show();
             finish();
         }
 
        }
+
+
+    private void createAlarm()
+    {
+        // Get the System Alarm Manager
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Create Intent to call the BroadcastReceiver
+        Intent alarmIntent = new Intent(this, AlermClockReceiver.class);
+        alarmIntent.putExtra("alarmType", "TODO");
+        alarmIntent.putExtra("alarmId", ALARM_ID);
+
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, ALARM_ID, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Calendar myAlarmDate = Calendar.getInstance();
+        myAlarmDate.setTimeInMillis(System.currentTimeMillis());
+        myAlarmDate.set(d.getYear(), d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), 0);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, myAlarmDate.getTimeInMillis(), alarmPendingIntent);
+        }
+        ALARM_ID++;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -213,50 +245,41 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             mYear = c.get(Calendar.YEAR);
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
-
-
             DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                     new DatePickerDialog.OnDateSetListener() {
-
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-                            Log.d("mylog"," ---> "+ String.valueOf(dayOfMonth) );
-
-
+                            monthOfYear++;
                             boolean check_day = false;
                             boolean check_month = false;
                             if(dayOfMonth < 10){
-
                                 day1  = "0" + String.valueOf(dayOfMonth) ;
                                 check_day =true;
-
-                                //txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
                             }
                             if(monthOfYear < 9){
-                                Log.d("mylog", String.valueOf(monthOfYear));
-                                monthOfYear++;
                                 monthOfYear1 = "0" +String.valueOf(monthOfYear);
                                 check_month = true;
-                                Log.d("mylog", "i was here");
                             }
                             if (check_day && check_month){
                                 txtDate.setText(day1 + "/" + (monthOfYear1) + "/" + year);
-                                Log.d("mylog", "1");
+                                dateTime = year+monthOfYear1+day1;
                             }
                             else if(check_day && !check_month){
-                                txtDate.setText(day1 + "/" + (monthOfYear+1) + "/" + year);
-                                Log.d("mylog", "2");
+                                txtDate.setText(day1 + "/" + (monthOfYear) + "/" + year);
+                                dateTime = String.valueOf(year)+String.valueOf(monthOfYear)+day1;
                             }
                             else if(!check_day && check_month){
                                 txtDate.setText(dayOfMonth + "/" + (monthOfYear1) + "/" + year);
-                                Log.d("mylog", "2");
+                                dateTime = year+monthOfYear1+dayOfMonth;
                             }
-
                             else {
                                 txtDate.setText(dayOfMonth + "/" + (monthOfYear) + "/" + year);
-                                Log.d("mylog", "3");
+                                dateTime = String.valueOf(year)+String.valueOf(monthOfYear)+String.valueOf(dayOfMonth);
                             }
+
+                            Log.d("mylog", "->"+dateTime);
+
                         }
                     }, mYear, mMonth, mDay);
             datePickerDialog.show();
@@ -276,37 +299,39 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
 
+
                             boolean check_hour = false;
                             boolean check_minute = false;
                             if(hourOfDay < 10){
-                                Log.d("mylog", "1");
-                                Log.d("mylog", String.valueOf(hourOfDay));
                                 hour1 = "0" +String.valueOf(hourOfDay);
                                 check_hour = true;
                             }
                             if (minute < 10){
-                                Log.d("mylog", "2");
-                                Log.d("mylog", String.valueOf(minute));
                                 minute1 = "0" +String.valueOf(minute);
-                                Log.d("mylog","change to"+ minute1);
                                 check_minute = true;
                             }
                             if (check_hour && check_minute){
                                 txtTime.setText(hour1 + ":" + minute1);
+                                dateTime+=hour1+minute1;
                             }
                             else if(check_hour && !check_minute){
                                 txtTime.setText(hour1 +  ":"+ minute);
+                                dateTime+=hour1+minute;
                             }
                             else if(!check_hour && check_minute){
                                 txtTime.setText(hourOfDay +  ":"+ minute1);
+                                dateTime+=hourOfDay+minute1;
                             }
-                            else
+                            else {
                                 txtTime.setText(hourOfDay + ":" + minute);
-
-
+                                dateTime+=hourOfDay+String.valueOf(minute);
+                            }
+                            Log.d("mylog", "->"+dateTime);
 
                         }
+
                     }, mHour, mMinute, true);
+
             timePickerDialog.show();
         }
         if (v == btnADD) {
@@ -324,9 +349,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 if (!Check_validDate(txtDate.getText().toString())) {
                     Toast.makeText(this, "Not valid Date manually!!!", Toast.LENGTH_SHORT).show();
                     all_fill = false;
-                } else
-                    Toast.makeText(this, "valid Date was enterd !!", Toast.LENGTH_SHORT).show();
-
+                }
             } else {
                 Toast.makeText(this, "please add date to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
@@ -335,14 +358,11 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 if (!Check_validTime(txtTime.getText().toString())) {
                     Toast.makeText(this, "Not valid time manually!!!", Toast.LENGTH_SHORT).show();
                     all_fill = false;
-                } else
-                    Toast.makeText(this, "  time was enterd !!!", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "please add time to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
-
-            Log.d("mylog", "allFill is: "+String.valueOf(all_fill));
             if (all_fill == true) {
                 addToDo();
             }

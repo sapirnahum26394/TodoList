@@ -1,57 +1,47 @@
 package com.sapirn_moshet.ex3;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class TodoItem {
     private String title;
-
-    // Android version API
     private String description;
-
-    // Drawable resource ID
-    private String date;
-
-    // Drawable resource ID
-    private String time;
+    private String dateTime;
     private int id;
+    private SimpleDateFormat dateTimeFormatter,dateFormatter,hourFormatter;
+    private Date d;
 
-
-    /*
-     * Create a new AndroidFlavor object.
-     *
-     * @param name is the name of the Android version (e.g. Gingerbread)
-     * @param number is the corresponding Android version API level
-     * @param image is drawable reference ID that corresponds to the Android version
-     * */
-    public TodoItem(int id, String title, String desc, String date, String time)
+    public TodoItem(int id, String title, String desc, String dateTime)
     {
         this.id = id;
         this.title = title;
         this.description = desc;
-        this.date = date;
-        this.time = time;
+        this.dateTime = dateTime;
+        dateTimeFormatter = new SimpleDateFormat("yyyyMMddHHmm");
+        dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
+        hourFormatter = new SimpleDateFormat("HH:mm");
+        try {
+            d = dateTimeFormatter.parse(dateTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Get the name of the Android version
-     */
+
     public String getTitle() {
         return title;
     }
 
-    /**
-     * Get the Android version API Level
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Get the image resource ID
-     */
     public String getDate() {
-        return date;
+        return dateFormatter.format(d);
     }
     public String getTime() {
-        return time;
+        return hourFormatter.format(d);
     }
     public int getID(){ return id; }
 }
