@@ -68,7 +68,8 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
         try
         {
             todos = openOrCreateDatabase(MY_DB_NAME, MODE_PRIVATE, null);
-            String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, date VARCHAR, time VARCHAR);";
+           // String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, date VARCHAR, time VARCHAR);";
+            String sql = "CREATE TABLE IF NOT EXISTS todos (_id INTEGER primary key, username VARCHAR, title VARCHAR,description VARCHAR, datetime INTEGER);";
             todos.execSQL(sql);
         }
         catch (Exception e)
@@ -85,8 +86,11 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
             Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
             try {
                 while (cursor.moveToNext()) {
-                    todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                    Log.d("my_log", "im in create list while loop!");
+                    // todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
+                    todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getInt(4)));
                 }
+                Log.d("my_log", "finish with the try and catch");
             } finally {
                 cursor.close();
             }
@@ -161,8 +165,8 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
             i.putExtra("id", todoItems.get(position).getID());
             i.putExtra("title", todoItems.get(position).getTitle());
             i.putExtra("description", todoItems.get(position).getDescription());
-            i.putExtra("date", todoItems.get(position).getDate());
-            i.putExtra("time", todoItems.get(position).getTime());
+          //  i.putExtra("date", todoItems.get(position).getDate());
+          //  i.putExtra("time", todoItems.get(position).getTime());
             i.putExtra("btn", "UPDATE");
             startActivity(i);
         }
