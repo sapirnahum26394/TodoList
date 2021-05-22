@@ -1,7 +1,9 @@
 package com.sapirn_moshet.ex3;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,10 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -86,11 +86,8 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
             Cursor cursor = todos.rawQuery("SELECT * FROM todos WHERE username='"+user_name+"';", null);
             try {
                 while (cursor.moveToNext()) {
-                    Log.d("my_log", "im in create list while loop!");
-                    // todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getString(4),cursor.getString(5)));
                     todoItems.add(new TodoItem(cursor.getInt(0),cursor.getString(2), cursor.getString(3) ,cursor.getLong(4)));
                 }
-                Log.d("my_log", "finish with the try and catch");
             } finally {
                 cursor.close();
             }
@@ -113,6 +110,7 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
             public void onClick(DialogInterface dialog, int which)
             {
                 todos.delete("todos","_id = "+itemId,null);
+                cancelAlarm(itemId);
                 Toast.makeText(ToDoListActivity.this, "Todo was DELETED", Toast.LENGTH_LONG).show();
                 create_list();
             }
@@ -204,6 +202,16 @@ public class ToDoListActivity extends AppCompatActivity implements View.OnClickL
     protected void onResume() {
         super.onResume();
         create_list();
+    }
+
+    private void cancelAlarm(int ALARM_ID) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(this, AlarmClockReceiver.class);
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, ALARM_ID, alarmIntent, PendingIntent.FLAG_NO_CREATE);
+        if(alarmPendingIntent!=null) {
+            alarmManager.cancel(alarmPendingIntent);
+            alarmPendingIntent.cancel();
+        }
     }
 }
 

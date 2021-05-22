@@ -72,15 +72,6 @@ public class TodoItemAdapter extends ArrayAdapter<TodoItem>
         // Get the version number from the current AndroidFlavor object and
         // set this text on the number TextView
 
-
-        long test = (currentTodoItem.getDateTime()); //just for test
-        //int test = (currentTodoItem.getDateTime());
-      //  test++;
-        Log.d("mylog", "value: " + test);  //for test
-        Log.d("mylog", "test:"+String.valueOf(test)); //for test
-        Log.d("mylog", "value of datTime:"+String.valueOf(currentTodoItem.getDateTime())); //for test
-        String num = String.valueOf(currentTodoItem.getDateTime()); //for test
-
         txtDate.setText(currentTodoItem.getDate(currentTodoItem.getDateTime()));
 
         TextView txtTime = convertView.findViewById(R.id.txtTimeID);

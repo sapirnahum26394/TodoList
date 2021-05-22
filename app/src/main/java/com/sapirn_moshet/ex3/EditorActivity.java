@@ -2,32 +2,28 @@ package com.sapirn_moshet.ex3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.text.ParseException;
 
 public class EditorActivity extends AppCompatActivity implements View.OnClickListener {
     private Button btnDatePicker, btnTimePicker, btnADD;
@@ -37,7 +33,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     private String day1, monthOfYear1;
     private String hour1, minute1;
     private String user_name;
-
     public static final String MY_DB_NAME = "TodosDB"; //test
     private SQLiteDatabase todos = null;
     int id = 0;
@@ -58,7 +53,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         String text = (getIntent().getExtras().getString("txtheadID"));
         text+=String.valueOf(getIntent().getExtras().getInt("id"));
         text+=")";
-        Log.d("mylog", "my text is:"+text);
         if(!text.equals("null0)"))
         {
             txtHeadLine.setText(text);
@@ -128,18 +122,15 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
                     }
                     if(isDigit(strDate.charAt(0)) && isDigit(strDate.charAt(1))){//check day
-                        Log.d("mylog", "check DAY of date! 0");
                         if (strDate.charAt(0) == '0')
                         {
                             if (strDate.charAt(1) < '1') {
-                                Log.d("mylog", "check DAY of date! 1");
                                 return false;
                             }
                         }
 
                         if (strDate.charAt(0) == '3'){
                             if (strDate.charAt(1) > '1') {
-                                Log.d("mylog", "check DAY of date! 2");
                                 return false;
                             }
 
@@ -147,7 +138,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                         if (strDate.charAt(0) > '3'){
                             return false;
                         }
-                        Log.d("mylog", "ALL CLEAR!");
                     }
                     return true;
                 }
@@ -172,19 +162,16 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         String temp = date;
         temp = temp.concat(time);
-        //test
 
-        //Log.d("mylog"," ---> "+temp + " temp of concat is:!"); //for test
-        //Log.d("mylog", " username is:"+user_name); //for test
         String newTemp= temp.replace("/", "");
         newTemp =  newTemp.replace(":", "");
-       // Log.d("mylog"," ---> "+newTemp + " after replacment:!"); //for test
 
         long date_and_time = Long.valueOf(newTemp);
 
 
         if(btn_Action!=null && btn_Action.equals("UPDATE")){
             int update_id = getIntent().getExtras().getInt("id");
+            createAlarm(date_and_time,update_id);
 
             sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , datetime = "+"'"+date_and_time+"' WHERE _id = "+ update_id;
             todos.execSQL(sql);
@@ -192,7 +179,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
             finish();
         }
         else{
-            Log.d("mylog"," ---> im in add section! "); //for test
             String count = "SELECT * FROM todos";
             Cursor mcursor = todos.rawQuery(count, null);
             int icount = mcursor.getCount();
@@ -206,15 +192,15 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 id++;
             }
 
+            createAlarm(date_and_time,id);
 
             sql = "INSERT INTO todos (_id, username, title, description, datetime) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" +    date_and_time+ "');";
             todos.execSQL(sql);
             Toast.makeText(this, "ADDED was Todo", Toast.LENGTH_SHORT).show();
-
             finish();
         }
 
-       }
+    }
 
     @Override
     public void onClick(View v) {
@@ -233,8 +219,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-                            Log.d("mylog"," ---> "+ String.valueOf(dayOfMonth) );
-
 
                             boolean check_day = false;
                             boolean check_month = false;
@@ -246,28 +230,22 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                                 //txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
                             }
                             if(monthOfYear < 9){
-                                Log.d("mylog", String.valueOf(monthOfYear));
                                 monthOfYear++;
                                 monthOfYear1 = "0" +String.valueOf(monthOfYear);
                                 check_month = true;
-                                Log.d("mylog", "i was here");
                             }
                             if (check_day && check_month){
                                 txtDate.setText(day1 + "/" + (monthOfYear1) + "/" + year);
-                                Log.d("mylog", "1");
                             }
                             else if(check_day && !check_month){
                                 txtDate.setText(day1 + "/" + (monthOfYear+1) + "/" + year);
-                                Log.d("mylog", "2");
                             }
                             else if(!check_day && check_month){
                                 txtDate.setText(dayOfMonth + "/" + (monthOfYear1) + "/" + year);
-                                Log.d("mylog", "2");
                             }
 
                             else {
                                 txtDate.setText(dayOfMonth + "/" + (monthOfYear) + "/" + year);
-                                Log.d("mylog", "3");
                             }
                         }
                     }, mYear, mMonth, mDay);
@@ -291,16 +269,11 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                             boolean check_hour = false;
                             boolean check_minute = false;
                             if(hourOfDay < 10){
-                                Log.d("mylog", "1");
-                                Log.d("mylog", String.valueOf(hourOfDay));
                                 hour1 = "0" +String.valueOf(hourOfDay);
                                 check_hour = true;
                             }
                             if (minute < 10){
-                                Log.d("mylog", "2");
-                                Log.d("mylog", String.valueOf(minute));
                                 minute1 = "0" +String.valueOf(minute);
-                                Log.d("mylog","change to"+ minute1);
                                 check_minute = true;
                             }
                             if (check_hour && check_minute){
@@ -353,8 +326,6 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(this, "please add time to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
-
-            Log.d("mylog", "allFill is: "+String.valueOf(all_fill));
             if (all_fill == true) {
                 addToDo();
             }
@@ -362,6 +333,39 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
+    private void createAlarm(long date_and_time,int id) {
 
+        // Get the System Alarm Manager
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        // Create Intent to call the BroadcastReceiver
+        Intent alarmIntent = new Intent(this, AlarmClockReceiver.class);
+        alarmIntent.putExtra("alarmType", "OneTime");
+        alarmIntent.putExtra("alarmId", id);
+
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        String dateString = String.valueOf(date_and_time);
+
+        if (dateString.length() < 12) //Adding leading Zero in from of string number
+            dateString = '0' + dateString;
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmm");
+        String currentDateandTime = sdf.format(new Date());
+
+        try {
+            Date currentdate = sdf.parse(currentDateandTime);
+            Date date = sdf.parse(dateString);
+            if(!date.before(currentdate)){
+                long triggerTimeMS = date.getTime();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeMS, alarmPendingIntent);
+                }
+            }
+        }
+        catch (Exception e) {
+            Log.d("Error: ", String.valueOf(e));
+        }
+
+    }
 
 }
