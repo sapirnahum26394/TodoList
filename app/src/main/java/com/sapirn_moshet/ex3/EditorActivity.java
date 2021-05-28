@@ -6,7 +6,9 @@ import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -48,7 +50,8 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
         txtTitle = (EditText) findViewById(R.id.titleID);
         txtDescription = (EditText) findViewById(R.id.descID);
         txtHeadLine = (TextView)findViewById(R.id.txtheadID);
-        user_name = getIntent().getExtras().getString("user_name");
+        SharedPreferences sharedPref = getSharedPreferences("application", Context.MODE_PRIVATE);
+        user_name = sharedPref.getString("LAST_LOGGED_IN"," ");
 
         String text = (getIntent().getExtras().getString("txtheadID"));
         text+=String.valueOf(getIntent().getExtras().getInt("id"));
@@ -171,7 +174,7 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
 
         if(btn_Action!=null && btn_Action.equals("UPDATE")){
             int update_id = getIntent().getExtras().getInt("id");
-            createAlarm(date_and_time,update_id);
+            createAlarm(date_and_time,update_id,title);
 
             sql = "UPDATE todos SET title = "+"'"+title+"' , description = "+"'"+description+"' , datetime = "+"'"+date_and_time+"' WHERE _id = "+ update_id;
             todos.execSQL(sql);
@@ -192,15 +195,25 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 id++;
             }
 
-            createAlarm(date_and_time,id);
+            createAlarm(date_and_time,id,title);
 
             sql = "INSERT INTO todos (_id, username, title, description, datetime) VALUES ('" + id  + "','"+ user_name  + "','" + title  + "', '" + description + "', '" +    date_and_time+ "');";
             todos.execSQL(sql);
             Toast.makeText(this, "ADDED was Todo", Toast.LENGTH_SHORT).show();
-            finish();
+            clearText();
+//            finish();
         }
 
     }
+
+    private void clearText() {
+        txtTitle.setText("");
+        txtDescription.setText("");
+        txtDate.setText("");
+        txtTime.setText("");
+    }
+
+
 
     @Override
     public void onClick(View v) {
@@ -301,28 +314,25 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(this, "please add title text to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
-            if (txtDescription.getText().toString().equals("")) {
+            if (all_fill==true && txtDescription.getText().toString().equals("")) {
                 Toast.makeText(this, "please add description text to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
-            if (!txtDate.getText().toString().equals("")) {
+            if (all_fill==true && !txtDate.getText().toString().equals("")) {
                 if (!Check_validDate(txtDate.getText().toString())) {
-                    Toast.makeText(this, "Not valid Date manually!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Not valid Date !!!", Toast.LENGTH_SHORT).show();
                     all_fill = false;
-                } else
-                    Toast.makeText(this, "valid Date was enterd !!", Toast.LENGTH_SHORT).show();
-
-            } else {
+                }
+            } else if (all_fill==true){
                 Toast.makeText(this, "please add date to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
-            if (!txtTime.getText().toString().equals("")) {
+            if (all_fill==true && !txtTime.getText().toString().equals("")) {
                 if (!Check_validTime(txtTime.getText().toString())) {
-                    Toast.makeText(this, "Not valid time manually!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Not valid time !!!", Toast.LENGTH_SHORT).show();
                     all_fill = false;
-                } else
-                    Toast.makeText(this, "  time was enterd !!!", Toast.LENGTH_SHORT).show();
-            } else {
+                }
+            } else if (all_fill==true){
                 Toast.makeText(this, "please add time to Todo", Toast.LENGTH_SHORT).show();
                 all_fill = false;
             }
@@ -333,29 +343,39 @@ public class EditorActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    private void createAlarm(long date_and_time,int id) {
+    private void createAlarm(long date_and_time,int id,String title) {
 
         // Get the System Alarm Manager
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        // Create Intent to call the BroadcastReceiver
-        Intent alarmIntent = new Intent(this, AlarmClockReceiver.class);
-        alarmIntent.putExtra("alarmType", "OneTime");
-        alarmIntent.putExtra("alarmId", id);
-
-        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String dateString = String.valueOf(date_and_time);
 
         if (dateString.length() < 12) //Adding leading Zero in from of string number
             dateString = '0' + dateString;
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmm");
+
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyHHmm");
         String currentDateandTime = sdf.format(new Date());
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+        // Create Intent to call the BroadcastReceiver
+        Intent alarmIntent = new Intent(this, AlarmClockReceiver.class);
+        alarmIntent.putExtra("username", user_name);
+        alarmIntent.putExtra("title", title);
+        alarmIntent.putExtra("datetime", dateString);
+        alarmIntent.putExtra("alarmId", id);
+
+
+        PendingIntent alarmPendingIntent = PendingIntent.getBroadcast(this, id, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         try {
-            Date currentdate = sdf.parse(currentDateandTime);
-            Date date = sdf.parse(dateString);
-            if(!date.before(currentdate)){
-                long triggerTimeMS = date.getTime();
+            calendar1.setTime(sdf.parse(dateString));
+            calendar2.setTime(sdf.parse(currentDateandTime));
+            if(calendar1.getTime().after(calendar2.getTime())){
+                Log.d("clock","**********");
+                Log.d("clock", String.valueOf(calendar1.getTime()));
+                Log.d("clock", String.valueOf(calendar2.getTime()));
+                long triggerTimeMS = calendar1.getTimeInMillis();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 {
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeMS, alarmPendingIntent);

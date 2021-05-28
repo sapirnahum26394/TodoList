@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void showAboutDialog() {
         String aboutApp = "Todo App (" + getString(R.string.app_name) + ")\n" +
-                "By Sapir Nahum & Moshe Tendler, 18/05/2021.";
+                "By Sapir Nahum & Moshe Tendler, 01/06/2021.";
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setIcon(R.mipmap.ic_launcher);
@@ -214,7 +214,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // Execute SQL statement to insert new data
         String sql = "INSERT INTO users (username, password) VALUES ('" + user_Name + "', '" + user_pass + "');";
         Todos.execSQL(sql);
-        Toast.makeText(this, user_Name + " was insert!", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, ToDoListActivity.class);
         startActivity(intent);
     }
